@@ -1,0 +1,14 @@
+times
+                                       
+4.sql                                                 
+BEGIN                                                 
+Timing is on.                                         
+Time: 1799964.134 ms (29:59.964)                      
+Time: 0.375 ms                                        
+                                      
+6.sql                                                 
+BEGIN                                                 
+Timing is on.                                         
+Time: 568972.119 ms (09:28.972)                        
+Time: 0.325 ms
+
