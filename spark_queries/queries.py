@@ -204,7 +204,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
                 ((ger_chi_sup_sel['SUPP_NATION'] == 'CHINA') &
                  (germany_china['CUST_NATION'] == 'GERMANY'))
         ) & (
-            orders['L_SHIPDATE'].between(
+            lineitem['L_SHIPDATE'].between(
                 get_datetime(datetime.datetime(1995, 1, 1), is_avro),
                 get_datetime(datetime.datetime(1996, 12, 31), is_avro),
             )
@@ -256,7 +256,7 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
             get_datetime(datetime.datetime(1995, 1, 1), is_avro),
             get_datetime(datetime.datetime(1996, 12, 31), is_avro),
         )
-    ).goupBy(
+    ).groupBy(
         orders['O_YEAR']
     ).sort(
         orders['O_YEAR']
@@ -300,10 +300,10 @@ def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
          ).alias('AMOUNT'),
     ).groupBy(
         'NATION',
-        orders['O_YEAR']
+        'O_YEAR'
     ).sort(
         'NATION',
-        orders['O_YEAR'].desc()
+        ('O_YEAR').desc()
     )
     return df
 
