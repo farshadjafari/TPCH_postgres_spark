@@ -22,7 +22,7 @@ for frmt in ['parquet', 'orc', 'avro']:
     orders = spark.read.format(read_format).load("hdfs://namenode:8020/frshd/ORDERS.%s" % frmt)
     region = spark.read.format(read_format).load("hdfs://namenode:8020/frshd/REGION.%s" % frmt)
     tables = [customer, lineitem, part, supplier, partsupp, nation, orders, region]
-    for i in range(1, 2):
+    for i in range(1, 8):
         start_time = time.time()
         querie = getattr(queries, 'q%s' % i)
         try:
@@ -40,4 +40,4 @@ for frmt in ['parquet', 'orc', 'avro']:
         with open('times', 'a') as times:
             times.write("--- query no %s - %s ---\n" % (i, frmt))
             times.write("%s seconds\n\n" % duration)
-# spark.stop()
+spark.stop()

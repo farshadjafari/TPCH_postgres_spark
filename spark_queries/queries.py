@@ -12,16 +12,6 @@ def get_datetime(pydate, is_avro):
     return pydate
 
 
-# --- query no 1 - parquet ---
-# 957.2419791221619 seconds
-#
-# --- query no 1 - orc ---
-# 1025.3170006275177 seconds
-#
-# --- query no 1 - avro ---
-# 1242.639072418213 seconds
-#
-
 def q1(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
     df = lineitem.filter(lineitem['L_SHIPDATE'] <= (
         get_datetime(datetime.datetime(1998, 12, 1) - datetime.timedelta(days=68), is_avro))
@@ -37,7 +27,6 @@ def q1(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
              F.count('*').alias('count_order'),
              )
     print('###################################')
-    # df.show()
     return df
 
 
@@ -183,10 +172,57 @@ def q6(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
 
 
 def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
-    germany = nation.filter(nation['N_NAME'] == 'GERMANY')
-    china = nation.filter(nation['N_NAME'] == 'CHINA')
+    germany_china = nation.filter(
+        (nation['N_NAME'] == 'GERMANY') |
+        (nation['N_NAME'] == 'CHINA')
+    )
+    ger_chi_sup = germany_china.join(supplier, supplier['S_NATIONKEY'] == germany_china['N_NATIONKEY'])
+    ger_chi_sup_sel = ger_chi_sup.select(ger_chi_sup['S_SUPPKEY'], ger_chi_sup['S_NATIONKEY'].alias('SUPP_NATION'))
 
-    return 7
+    ger_chi_lines = germany_china.join(
+        customer,
+        customer['C_NATIONKEY'] == germany_china['N_NATIONKEY']
+    ).join(
+        orders,
+        customer['C_CUSTKEY'] == orders['O_CUSTKEY']
+    ).join(
+        lineitem,
+        orders['O_ORDERKEY'] == lineitem['L_ORDERKEY']
+    ).join(
+        supplier,
+        supplier['S_SUPPKEY'] == lineitem['L_SUPPKEY']
+    ).join(
+        ger_chi_sup_sel,
+        supplier['S_SUPPKEY'] == ger_chi_sup_sel['S_SUPPKEY']
+    ).select(
+        germany_china['N_NATIONKEY'].alias('CUST_NATION'),
+        ger_chi_sup_sel['S_SUPPKEY'].alias('SUPP_NATION'),
+        F.year(orders['L_SHIPDATE']).alias('L_YEAR'),
+        (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME')
+    ).filter(
+        (
+                ((ger_chi_sup_sel['SUPP_NATION'] == 'GERMANY') &
+                 (germany_china['CUST_NATION'] == 'CHINA')) |
+                ((ger_chi_sup_sel['SUPP_NATION'] == 'CHINA') &
+                 (germany_china['CUST_NATION'] == 'GERMANY'))
+        ) & (
+            orders['L_SHIPDATE'].between(
+                get_datetime(datetime.datetime(1995, 1, 1), is_avro),
+                get_datetime(datetime.datetime(1996, 12, 31), is_avro),
+            )
+        )
+
+    )
+    ger_chi_lines_gourps = ger_chi_lines.groupBy('SUPP_NATION', 'CUST_NATION', 'L_YEAR')
+    ger_chi_lines_gourps_rev = ger_chi_lines_gourps.agg(
+        F.sum(ger_chi_lines_gourps['VOLUME']).alias('REVENUE')
+    )
+    ger_chi_lines_gourps_rev_sorted = ger_chi_lines_gourps_rev.sort(
+        ger_chi_lines_gourps_rev['SUPP_NATION'],
+        ger_chi_lines_gourps_rev['CUST_NATION'],
+        ger_chi_lines_gourps_rev['L_YEAR'],
+    )
+    return ger_chi_lines_gourps_rev_sorted
 
 
 def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region):
