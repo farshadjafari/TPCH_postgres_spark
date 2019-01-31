@@ -166,8 +166,6 @@ def q6(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
     lineitem_filtered_revenue = lineitem_filtered.agg(
         F.sum(lineitem['L_EXTENDEDPRICE'] * lineitem['L_DISCOUNT']).alias('REVENUE')
     )
-    print(lineitem_filtered.count())
-    print(lineitem_filtered_revenue.collect())
     return lineitem_filtered_revenue
 
 
@@ -225,8 +223,55 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
     return ger_chi_lines_gourps_rev_sorted
 
 
-def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region):
-    return 8
+def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
+    asia_nations = nation.join(
+        region,
+        [region['R_NAME'] == 'ASIA',
+         region['R_REGIONKEY'] == nation['N_REGIONKEY']]
+    )
+    all_nations = customer.join(
+        asia_nations,
+        customer['C_NATIONKEY'] == asia_nations['N_NATIONKEY']
+    ).join(
+        orders,
+        orders['O_CUSTKEY'] == customer['C_CUSTKEY']
+    ).join(
+        lineitem,
+        lineitem['L_ORDERKEY'] == orders['O_ORDERKEY']
+    ).join(
+        part,
+        [part['P_TYPE'] == 'STANDARD PLATED COPPER',
+        part['P_PARTKEY'] == lineitem['L_PARTKEY']]
+    ).join(
+        supplier.join(
+            nation,
+            nation['N_NATIONKEY'] == supplier['S_NATIONKEY']
+        ).select(
+            supplier['S_SUPPKEY'],
+            nation['N_NAME'].alias('NATION')
+        ),
+        supplier['S_SUPPKEY'] == lineitem['L_SUPPKEY']
+    ).filter(
+        orders['O_ORDERDATE'].between(
+            get_datetime(datetime.datetime(1995, 1, 1), is_avro),
+            get_datetime(datetime.datetime(1996, 12, 31), is_avro),
+        )
+    ).goupBy(
+        orders['O_YEAR']
+    ).sort(
+        orders['O_YEAR']
+    ).select(
+        F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
+        (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME'),
+        'NATION'
+    )
+    china_share = all_nations.groupBy('O_YEAR').agg(
+        (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0)/F.sum(all_nations['VOLUME'])
+        ).alias('MKT_SHARE')
+    ).sort(
+        all_nations['O_YEAR']
+    )
+    return china_share
 
 
 def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region):
