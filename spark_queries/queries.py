@@ -241,7 +241,7 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
     ).join(
         part,
         [part['P_TYPE'] == 'STANDARD PLATED COPPER',
-        part['P_PARTKEY'] == lineitem['L_PARTKEY']]
+         part['P_PARTKEY'] == lineitem['L_PARTKEY']]
     ).join(
         supplier.join(
             nation,
@@ -266,16 +266,46 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         'NATION'
     )
     china_share = all_nations.groupBy('O_YEAR').agg(
-        (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0)/F.sum(all_nations['VOLUME'])
-        ).alias('MKT_SHARE')
+        (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0) / F.sum(all_nations['VOLUME'])
+         ).alias('MKT_SHARE')
     ).sort(
         all_nations['O_YEAR']
     )
     return china_share
 
 
-def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region):
-    return 9
+def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
+    df = part.filter(
+        part['P_NAME'].like('%BLUE%')
+    ).join(
+        lineitem,
+        lineitem['L_PARTKEY'] == part['P_PARTKEY']
+    ).join(
+        supplier,
+        supplier['S_SUPPKEY'] == lineitem['L_SUPPKEY']
+    ).join(
+        nation,
+        supplier['S_NATIONKEY'] == nation['N_NATIONKEY']
+    ).join(
+        orders,
+        orders['O_ORDERKEY'] == lineitem['L_ORDERKEY']
+    ).join(
+        partsupp,
+        [partsupp['PS_SUPPKEY'] == lineitem['L_SUPPKEY'],
+         partsupp['PS_PARTKEY'] == lineitem['L_PARTKEY']]
+    ).select(
+        nation['N_NAME'].alias('NATION'),
+        F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
+        (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT']) - partsupp['PS_SUPPLYCOST'] * lineitem['L_QUANTITY']
+         ).alias('AMOUNT'),
+    ).groupBy(
+        'NATION',
+        orders['O_YEAR']
+    ).sort(
+        'NATION',
+        orders['O_YEAR'].desc()
+    )
+    return df
 
 
 def q10(customer, lineitem, part, supplier, partsupp, nation, orders, region):
