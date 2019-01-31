@@ -1,0 +1,27 @@
+--- query no 1 - parquet ---
+3.0033159256 seconds
+
+--- query no 1 - orc ---
+3.00324892998 seconds
+
+--- query no 1 - avro ---
+3.00321316719 seconds
+
+--- query no 1 - parquet ---
+3.00084590912 seconds
+
+--- query no 1 - orc ---
+3.0032119751 seconds
+
+--- query no 1 - avro ---
+3.00319314003 seconds
+
+--- query no 1 - parquet ---
+3.00261211395 seconds
+
+--- query no 1 - orc ---
+3.0032119751 seconds
+
+--- query no 1 - avro ---
+3.00309181213 seconds
+
