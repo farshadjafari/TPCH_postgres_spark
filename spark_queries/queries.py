@@ -195,7 +195,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
     ).select(
         germany_china['N_NATIONKEY'].alias('CUST_NATION'),
         ger_chi_sup_sel['S_SUPPKEY'].alias('SUPP_NATION'),
-        F.year(orders['L_SHIPDATE']).alias('L_YEAR'),
+        F.year(lineitem['L_SHIPDATE']).alias('L_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME')
     ).filter(
         (
@@ -256,14 +256,14 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
             get_datetime(datetime.datetime(1995, 1, 1), is_avro),
             get_datetime(datetime.datetime(1996, 12, 31), is_avro),
         )
-    ).groupBy(
-        orders['O_YEAR']
-    ).sort(
-        orders['O_YEAR']
     ).select(
         F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME'),
         'NATION'
+    ).groupBy(
+        'O_YEAR'
+    ).sort(
+        'O_YEAR'
     )
     china_share = all_nations.groupBy('O_YEAR').agg(
         (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0) / F.sum(all_nations['VOLUME'])
@@ -293,14 +293,14 @@ def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         partsupp,
         [partsupp['PS_SUPPKEY'] == lineitem['L_SUPPKEY'],
          partsupp['PS_PARTKEY'] == lineitem['L_PARTKEY']]
-    ).select(
+    ).groupBy(
+        'NATION',
+        'O_YEAR'
+    ).agg(
         nation['N_NAME'].alias('NATION'),
         F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT']) - partsupp['PS_SUPPLYCOST'] * lineitem['L_QUANTITY']
          ).alias('AMOUNT'),
-    ).groupBy(
-        'NATION',
-        'O_YEAR'
     ).sort(
         'NATION',
         ('O_YEAR').desc()
