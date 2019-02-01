@@ -210,9 +210,8 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
                  (ger_chi_lines['CUST_NATION'] == 'GERMANY'))
         )
     )
-    ger_chi_lines_gourps = ger_chi_lines_filtered.groupBy('SUPP_NATION', 'CUST_NATION', 'L_YEAR')
-    ger_chi_lines_gourps_rev = ger_chi_lines_gourps.agg(
-        F.sum(ger_chi_lines_gourps['VOLUME']).alias('REVENUE')
+    ger_chi_lines_gourps_rev = ger_chi_lines_filtered.groupBy('SUPP_NATION', 'CUST_NATION', 'L_YEAR').agg(
+        F.sum('VOLUME').alias('REVENUE')
     )
     ger_chi_lines_gourps_rev_sorted = ger_chi_lines_gourps_rev.sort(
         ger_chi_lines_gourps_rev['SUPP_NATION'],
