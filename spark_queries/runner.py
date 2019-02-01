@@ -31,7 +31,7 @@ for frmt in ['parquet']:
             print(e)
             result = e
         try:
-            result.coalesce(1).write.format("csv").save('%s_%s_out.csv' % (i, frmt), header='true')
+            result.coalesce(1).write.format("csv").save('%s_%s_out.csv' % (i, frmt), header='true', mode='overwrite')
         except:
             with open('%s_%s_out.ERR' % (i, frmt), 'w') as out:
                 out.write(str(result))
