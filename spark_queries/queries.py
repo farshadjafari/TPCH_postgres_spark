@@ -194,7 +194,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         supplier['S_SUPPKEY'] == ger_chi_sup_sel['S_SUPPKEY_1']
     ).select(
         germany_china['N_NATIONKEY'].alias('CUST_NATION'),
-        ger_chi_sup_sel['S_SUPPKEY'].alias('SUPP_NATION'),
+        ger_chi_sup_sel['S_SUPPKEY_1'].alias('SUPP_NATION'),
         F.year(lineitem['L_SHIPDATE']).alias('L_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME')
     )
@@ -264,10 +264,7 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
     ).groupBy(
         'O_YEAR'
     )
-    all_nations = all_nations.sort(
-        all_nations['O_YEAR']
-    )
-    china_share = all_nations.groupBy('O_YEAR').agg(
+    china_share = all_nations.agg(
         (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0) / F.sum(all_nations['VOLUME'])
          ).alias('MKT_SHARE')
     )
