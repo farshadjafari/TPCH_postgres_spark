@@ -1,0 +1,53 @@
+                                                                                 QUERY PLAN                                                                                  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=941254.05..941254.05 rows=1 width=40) (actual time=948717.711..948717.711 rows=0 loops=1)
+   InitPlan 1 (returns $2)
+     ->  Finalize Aggregate  (cost=177292.60..177292.61 rows=1 width=32) (actual time=4867.946..4867.947 rows=1 loops=1)
+           ->  Gather  (cost=177292.27..177292.58 rows=3 width=32) (actual time=4867.538..4868.159 rows=4 loops=1)
+                 Workers Planned: 3
+                 Workers Launched: 3
+                 ->  Partial Aggregate  (cost=176292.27..176292.28 rows=1 width=32) (actual time=4858.853..4858.853 rows=1 loops=4)
+                       ->  Nested Loop  (cost=1.89..168550.33 rows=1032258 width=10) (actual time=0.334..4394.394 rows=802520 loops=4)
+                             ->  Hash Join  (cost=1.32..27270.45 rows=12903 width=4) (actual time=0.220..145.528 rows=10032 loops=4)
+                                   Hash Cond: (supplier_1.s_nationkey = nation_1.n_nationkey)
+                                   ->  Parallel Seq Scan on supplier supplier_1  (cost=0.00..26278.81 rows=322581 width=12) (actual time=0.050..99.347 rows=250000 loops=4)
+                                   ->  Hash  (cost=1.31..1.31 rows=1 width=4) (actual time=0.044..0.044 rows=1 loops=4)
+                                         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                         ->  Seq Scan on nation nation_1  (cost=0.00..1.31 rows=1 width=4) (actual time=0.030..0.032 rows=1 loops=4)
+                                               Filter: (n_name = 'MOROCCO'::bpchar)
+                                               Rows Removed by Filter: 24
+                             ->  Index Scan using ps_suppkey_idx on partsupp partsupp_1  (cost=0.57..10.16 rows=79 width=18) (actual time=0.022..0.402 rows=80 loops=40126)
+                                   Index Cond: (ps_suppkey = supplier_1.s_suppkey)
+   ->  Sort  (cost=763961.44..765776.37 rows=725974 width=40) (actual time=948717.710..948717.710 rows=0 loops=1)
+         Sort Key: (sum((partsupp.ps_supplycost * (partsupp.ps_availqty)::numeric))) DESC
+         Sort Method: quicksort  Memory: 25kB
+         ->  Finalize GroupAggregate  (cost=293830.88..760331.57 rows=725974 width=40) (actual time=948717.678..948717.679 rows=0 loops=1)
+               Group Key: partsupp.ps_partkey
+               Filter: (sum((partsupp.ps_supplycost * (partsupp.ps_availqty)::numeric)) > $2)
+               Rows Removed by Filter: 3021645
+               ->  Gather Merge  (cost=293830.88..683508.28 rows=3096774 width=40) (actual time=937941.953..940478.399 rows=3161624 loops=1)
+                     Workers Planned: 3
+                     Workers Launched: 3
+                     ->  Partial GroupAggregate  (cost=292830.84..318637.29 rows=1032258 width=40) (actual time=937911.428..939410.878 rows=790406 loops=4)
+                           Group Key: partsupp.ps_partkey
+                           ->  Sort  (cost=292830.84..295411.49 rows=1032258 width=18) (actual time=937911.379..938130.453 rows=802520 loops=4)
+                                 Sort Key: partsupp.ps_partkey
+                                 Sort Method: external merge  Disk: 23680kB
+                                 Worker 0:  Sort Method: external merge  Disk: 23512kB
+                                 Worker 1:  Sort Method: external merge  Disk: 23752kB
+                                 Worker 2:  Sort Method: external merge  Disk: 23312kB
+                                 ->  Nested Loop  (cost=1.89..168550.33 rows=1032258 width=18) (actual time=3.005..936620.833 rows=802520 loops=4)
+                                       ->  Hash Join  (cost=1.32..27270.45 rows=12903 width=4) (actual time=0.905..237.286 rows=10032 loops=4)
+                                             Hash Cond: (supplier.s_nationkey = nation.n_nationkey)
+                                             ->  Parallel Seq Scan on supplier  (cost=0.00..26278.81 rows=322581 width=12) (actual time=0.553..158.003 rows=250000 loops=4)
+                                             ->  Hash  (cost=1.31..1.31 rows=1 width=4) (actual time=0.044..0.046 rows=1 loops=4)
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                   ->  Seq Scan on nation  (cost=0.00..1.31 rows=1 width=4) (actual time=0.034..0.037 rows=1 loops=4)
+                                                         Filter: (n_name = 'MOROCCO'::bpchar)
+                                                         Rows Removed by Filter: 24
+                                       ->  Index Scan using ps_suppkey_idx on partsupp  (cost=0.57..10.16 rows=79 width=26) (actual time=11.869..93.284 rows=80 loops=40126)
+                                             Index Cond: (ps_suppkey = supplier.s_suppkey)
+ Planning Time: 315.139 ms
+ Execution Time: 949033.057 ms
+(49 rows)
+

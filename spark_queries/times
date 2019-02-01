@@ -1,27 +1,138 @@
 --- query no 1 - parquet ---
-3.0033159256 seconds
+928.6685264110565 seconds
+
+--- query no 2 - parquet ---
+68.71375679969788 seconds
+
+--- query no 3 - parquet ---
+595.3054299354553 seconds
+
+--- query no 4 - parquet ---
+315.3437490463257 seconds
+
+--- query no 5 - parquet ---
+718.3917486667633 seconds
 
 --- query no 1 - orc ---
-3.00324892998 seconds
+1149.802405834198 seconds
+
+--- query no 2 - orc ---
+74.88102626800537 seconds
+
+--- query no 3 - orc ---
+700.4274616241455 seconds
+
+--- query no 4 - orc ---
+314.8270938396454 seconds
+
+--- query no 5 - orc ---
+878.0103209018707 seconds
 
 --- query no 1 - avro ---
-3.00321316719 seconds
+1989.231547832489 seconds
 
---- query no 1 - parquet ---
-3.00084590912 seconds
+--- query no 2 - avro ---
+234.39619135856628 seconds
 
---- query no 1 - orc ---
-3.0032119751 seconds
+--- query no 3 - avro ---
+1424.8345880508423 seconds
 
---- query no 1 - avro ---
-3.00319314003 seconds
+--- query no 4 - avro ---
+1229.6136219501495 seconds
 
---- query no 1 - parquet ---
-3.00261211395 seconds
+--- query no 5 - avro ---
+1742.6889638900757 seconds
 
---- query no 1 - orc ---
-3.0032119751 seconds
+--- query no 6 - parquet ---
+475.5966672897339 seconds
 
---- query no 1 - avro ---
-3.00309181213 seconds
+--- query no 7 - parquet ---
+0.7580814361572266 seconds
+
+--- query no 8 - parquet ---
+0.2052607536315918 seconds
+
+--- query no 9 - parquet ---
+0.1637578010559082 seconds
+
+--- query no 7 - parquet ---
+0.8240697383880615 seconds
+
+--- query no 8 - parquet ---
+0.22392535209655762 seconds
+
+--- query no 9 - parquet ---
+0.20745038986206055 seconds
+
+--- query no 7 - parquet ---
+0.8918852806091309 seconds
+
+--- query no 8 - parquet ---
+0.2461550235748291 seconds
+
+--- query no 9 - parquet ---
+0.20676064491271973 seconds
+
+--- query no 7 - parquet ---
+0.7570419311523438 seconds
+
+--- query no 8 - parquet ---
+0.28816699981689453 seconds
+
+--- query no 9 - parquet ---
+0.19582414627075195 seconds
+
+--- query no 7 - parquet ---
+0.8900530338287354 seconds
+
+--- query no 8 - parquet ---
+0.2586383819580078 seconds
+
+--- query no 9 - parquet ---
+0.20010828971862793 seconds
+
+--- query no 7 - parquet ---
+0.8451559543609619 seconds
+
+--- query no 8 - parquet ---
+0.22523903846740723 seconds
+
+--- query no 9 - parquet ---
+0.2500569820404053 seconds
+
+--- query no 7 - parquet ---
+0.8216226100921631 seconds
+
+--- query no 8 - parquet ---
+0.24884748458862305 seconds
+
+--- query no 9 - parquet ---
+0.2401895523071289 seconds
+
+--- query no 7 - parquet ---
+0.8332118988037109 seconds
+
+--- query no 8 - parquet ---
+0.23031139373779297 seconds
+
+--- query no 9 - parquet ---
+0.23280072212219238 seconds
+
+--- query no 7 - parquet ---
+1.7349488735198975 seconds
+
+--- query no 8 - parquet ---
+0.37166738510131836 seconds
+
+--- query no 9 - parquet ---
+0.23802614212036133 seconds
+
+--- query no 7 - parquet ---
+1.2777948379516602 seconds
+
+--- query no 8 - parquet ---
+0.18908333778381348 seconds
+
+--- query no 9 - parquet ---
+0.3958103656768799 seconds
 

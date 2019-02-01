@@ -8,7 +8,7 @@ spark = SparkSession \
     .appName("Running queries in 'parquet', 'orc', 'avro' formats") \
     .getOrCreate()
 
-for frmt in ['parquet', 'orc', 'avro']:
+for frmt in ['parquet']:
     read_format = frmt
     if frmt == 'avro':
         read_format = 'com.databricks.spark.avro'
@@ -22,7 +22,7 @@ for frmt in ['parquet', 'orc', 'avro']:
     orders = spark.read.format(read_format).load("hdfs://namenode:8020/frshd/ORDERS.%s" % frmt)
     region = spark.read.format(read_format).load("hdfs://namenode:8020/frshd/REGION.%s" % frmt)
     tables = [customer, lineitem, part, supplier, partsupp, nation, orders, region]
-    for i in range(1, 8):
+    for i in range(7, 10):
         start_time = time.time()
         querie = getattr(queries, 'q%s' % i)
         try:

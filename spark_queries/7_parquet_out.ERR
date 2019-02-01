@@ -1,0 +1,1 @@
+DataFrame[SUPP_NATION: int, CUST_NATION: int, L_YEAR: int, REVENUE: decimal(32,4)]

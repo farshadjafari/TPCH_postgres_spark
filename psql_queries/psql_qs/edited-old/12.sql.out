@@ -1,0 +1,31 @@
+                                                                                                                                     QUERY PLAN                                                                                                                                      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=16368717.74..16369752.53 rows=1 width=27) (actual time=1159652.930..1160056.021 rows=1 loops=1)
+   ->  Finalize GroupAggregate  (cost=16368717.74..16375961.23 rows=7 width=27) (actual time=1159652.928..1159652.929 rows=1 loops=1)
+         Group Key: lineitem.l_shipmode
+         ->  Gather Merge  (cost=16368717.74..16375960.74 rows=56 width=27) (actual time=1159499.589..1160055.976 rows=10 loops=1)
+               Workers Planned: 8
+               Workers Launched: 8
+               ->  Partial GroupAggregate  (cost=16367717.60..16374953.69 rows=7 width=27) (actual time=1159446.340..1159577.174 rows=2 loops=9)
+                     Group Key: lineitem.l_shipmode
+                     ->  Sort  (cost=16367717.60..16368622.10 rows=361801 width=27) (actual time=1159304.071..1159384.147 rows=347351 loops=9)
+                           Sort Key: lineitem.l_shipmode
+                           Sort Method: external merge  Disk: 12592kB
+                           Worker 0:  Sort Method: external merge  Disk: 12600kB
+                           Worker 1:  Sort Method: external merge  Disk: 12584kB
+                           Worker 2:  Sort Method: external merge  Disk: 12560kB
+                           Worker 3:  Sort Method: external merge  Disk: 12608kB
+                           Worker 4:  Sort Method: external merge  Disk: 12600kB
+                           Worker 5:  Sort Method: external merge  Disk: 12600kB
+                           Worker 6:  Sort Method: external merge  Disk: 12576kB
+                           Worker 7:  Sort Method: external merge  Disk: 12568kB
+                           ->  Nested Loop  (cost=0.57..16334314.62 rows=361801 width=27) (actual time=1.329..1158547.241 rows=347351 loops=9)
+                                 ->  Parallel Seq Scan on lineitem  (cost=0.00..13906557.56 rows=361801 width=19) (actual time=0.299..561231.314 rows=347351 loops=9)
+                                       Filter: ((l_shipmode = ANY ('{RAIL,TRUCK}'::bpchar[])) AND (l_commitdate < l_receiptdate) AND (l_shipdate < l_commitdate) AND (l_receiptdate >= '1996-01-01'::date) AND (l_receiptdate < '1997-01-01 00:00:00'::timestamp without time zone))
+                                       Rows Removed by Filter: 66323527
+                                 ->  Index Scan using o_orderkey_idx on orders  (cost=0.57..6.71 rows=1 width=20) (actual time=1.716..1.716 rows=1 loops=3126158)
+                                       Index Cond: (o_orderkey = lineitem.l_orderkey)
+ Planning Time: 13.562 ms
+ Execution Time: 1160061.637 ms
+(27 rows)
+

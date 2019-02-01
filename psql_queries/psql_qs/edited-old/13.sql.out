@@ -1,0 +1,26 @@
+                                                                                             QUERY PLAN                                                                                              
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=17203342.43..17203342.44 rows=1 width=16) (actual time=9434219.024..9434724.298 rows=1 loops=1)
+   ->  Sort  (cost=17203342.43..17203342.93 rows=200 width=16) (actual time=9434219.022..9434219.023 rows=1 loops=1)
+         Sort Key: (count(*)) DESC, (count(orders.o_orderkey)) DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         ->  HashAggregate  (cost=17203339.43..17203341.43 rows=200 width=16) (actual time=9434218.968..9434218.978 rows=45 loops=1)
+               Group Key: count(orders.o_orderkey)
+               ->  Finalize GroupAggregate  (cost=1001.10..16978339.43 rows=15000000 width=12) (actual time=1191.599..9429300.769 rows=15000000 loops=1)
+                     Group Key: customer.c_custkey
+                     ->  Gather Merge  (cost=1001.10..16378339.43 rows=90000000 width=12) (actual time=687.446..9422203.485 rows=15000000 loops=1)
+                           Workers Planned: 6
+                           Workers Launched: 6
+                           ->  Partial GroupAggregate  (cost=1.01..5439029.62 rows=15000000 width=12) (actual time=431.305..8833369.629 rows=2142857 loops=7)
+                                 Group Key: customer.c_custkey
+                                 ->  Nested Loop Left Join  (cost=1.01..5164781.10 rows=24849704 width=8) (actual time=78.042..8825249.070 rows=21911933 loops=7)
+                                       ->  Parallel Index Only Scan using customer_pkey on customer  (cost=0.43..264520.43 rows=2500000 width=4) (actual time=35.572..1074.635 rows=2142857 loops=7)
+                                             Heap Fetches: 0
+                                       ->  Index Scan using o_custkey_idx on orders  (cost=0.57..1.78 rows=18 width=12) (actual time=0.333..4.115 rows=10 loops=15000000)
+                                             Index Cond: (customer.c_custkey = o_custkey)
+                                             Filter: ((o_comment)::text !~~ '%pending%deposits%'::text)
+                                             Rows Removed by Filter: 0
+ Planning Time: 384.225 ms
+ Execution Time: 9434724.594 ms
+(22 rows)
+

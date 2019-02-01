@@ -1,0 +1,7 @@
+ l_shipmode | high_line_count | low_line_count 
+------------+-----------------+----------------
+ RAIL       |          624950 |         938519
+ TRUCK      |          624953 |         937736
+(2 rows)
+
+COMMIT
