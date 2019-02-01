@@ -284,23 +284,21 @@ def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         supplier,
         supplier['S_SUPPKEY'] == lineitem['L_SUPPKEY']
     ).join(
-        nation,
+        nation.select(nation['N_NAME'].alias('NATION'), nation['N_NATIONKEY']),
         supplier['S_NATIONKEY'] == nation['N_NATIONKEY']
     ).join(
-        orders,
+        orders.select(F.year(orders['O_ORDERDATE']).alias('O_YEAR'), orders['O_ORDERKEY']),
         orders['O_ORDERKEY'] == lineitem['L_ORDERKEY']
     ).join(
         partsupp,
         [partsupp['PS_SUPPKEY'] == lineitem['L_SUPPKEY'],
          partsupp['PS_PARTKEY'] == lineitem['L_PARTKEY']]
-    ).agg(
-        (nation['N_NAME']).alias('NATION'),
-        F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
-        (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT']) - partsupp['PS_SUPPLYCOST'] * lineitem['L_QUANTITY']
-         ).alias('AMOUNT'),
     ).groupBy(
         'NATION',
         'O_YEAR'
+    ).agg(
+        (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT']) - partsupp['PS_SUPPLYCOST'] * lineitem['L_QUANTITY']
+         ).alias('AMOUNT'),
     )
     df = df.sort(
         df['NATION'],
