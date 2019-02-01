@@ -205,7 +205,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
                 ((ger_chi_lines['SUPP_NATION'] == 'CHINA') &
                  (ger_chi_lines['CUST_NATION'] == 'GERMANY'))
         ) & (
-            lineitem['L_SHIPDATE'].between(
+            ger_chi_lines['L_SHIPDATE'].between(
                 get_datetime(datetime.datetime(1995, 1, 1), is_avro),
                 get_datetime(datetime.datetime(1996, 12, 31), is_avro),
             )
