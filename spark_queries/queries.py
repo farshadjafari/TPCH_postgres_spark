@@ -175,7 +175,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         (nation['N_NAME'] == 'CHINA')
     )
     ger_chi_sup = germany_china.join(supplier, supplier['S_NATIONKEY'] == germany_china['N_NATIONKEY'])
-    ger_chi_sup_sel = ger_chi_sup.select(ger_chi_sup['S_SUPPKEY'], ger_chi_sup['S_NATIONKEY'].alias('SUPP_NATION'))
+    ger_chi_sup_sel = ger_chi_sup.select(ger_chi_sup['S_SUPPKEY'].alias('S_SUPPKEY_1'), ger_chi_sup['S_NATIONKEY'].alias('SUPP_NATION'))
 
     ger_chi_lines = germany_china.join(
         customer,
@@ -191,7 +191,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         supplier['S_SUPPKEY'] == lineitem['L_SUPPKEY']
     ).join(
         ger_chi_sup_sel,
-        supplier['S_SUPPKEY'] == ger_chi_sup_sel['S_SUPPKEY']
+        supplier['S_SUPPKEY'] == ger_chi_sup_sel['S_SUPPKEY_1']
     ).select(
         germany_china['N_NATIONKEY'].alias('CUST_NATION'),
         ger_chi_sup_sel['S_SUPPKEY'].alias('SUPP_NATION'),
@@ -263,17 +263,18 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         'NATION'
     ).groupBy(
         'O_YEAR'
-    ).sort(
-        'O_YEAR'
+    )
+    all_nations = all_nations.sort(
+        all_nations['O_YEAR']
     )
     china_share = all_nations.groupBy('O_YEAR').agg(
         (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0) / F.sum(all_nations['VOLUME'])
          ).alias('MKT_SHARE')
     )
-    china_share_grouped = china_share.sort(
+    china_share_sorted = china_share.sort(
         china_share['O_YEAR']
     )
-    return china_share
+    return china_share_sorted
 
 
 def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
@@ -296,7 +297,7 @@ def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         [partsupp['PS_SUPPKEY'] == lineitem['L_SUPPKEY'],
          partsupp['PS_PARTKEY'] == lineitem['L_PARTKEY']]
     ).agg(
-        nation['N_NAME'].alias('NATION'),
+        (nation['N_NAME']).alias('NATION'),
         F.year(orders['O_ORDERDATE']).alias('O_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT']) - partsupp['PS_SUPPLYCOST'] * lineitem['L_QUANTITY']
          ).alias('AMOUNT'),
