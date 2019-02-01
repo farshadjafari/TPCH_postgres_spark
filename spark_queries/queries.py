@@ -175,7 +175,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         (nation['N_NAME'] == 'CHINA')
     )
     ger_chi_sup = germany_china.join(supplier, supplier['S_NATIONKEY'] == germany_china['N_NATIONKEY'])
-    ger_chi_sup_sel = ger_chi_sup.select(ger_chi_sup['S_SUPPKEY'].alias('S_SUPPKEY_1'), ger_chi_sup['S_NATIONKEY'].alias('SUPP_NATION'))
+    ger_chi_sup_sel = ger_chi_sup.select(ger_chi_sup['S_SUPPKEY'].alias('S_SUPPKEY_1'), ger_chi_sup['N_NAME'].alias('SUPP_NATION'))
 
     ger_chi_lines = germany_china.join(
         customer,
@@ -197,7 +197,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         ger_chi_sup_sel,
         supplier['S_SUPPKEY'] == ger_chi_sup_sel['S_SUPPKEY_1']
     ).select(
-        germany_china['N_NATIONKEY'].alias('CUST_NATION'),
+        germany_china['N_NAME'].alias('CUST_NATION'),
         ger_chi_sup_sel['SUPP_NATION'],
         F.year(lineitem['L_SHIPDATE']).alias('L_YEAR'),
         (lineitem['L_EXTENDEDPRICE'] * (1 - lineitem['L_DISCOUNT'])).alias('VOLUME')
