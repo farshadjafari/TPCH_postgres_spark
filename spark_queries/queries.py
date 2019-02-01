@@ -260,15 +260,13 @@ def q8(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         'NATION'
     ).groupBy(
         'O_YEAR'
-    )
-    china_share = all_nations.agg(
-        (F.sum(all_nations['VOLUME'] if all_nations['NATION'] == 'CHINA' else 0) / F.sum(all_nations['VOLUME'])
+    ).agg(
+        (F.sum('VOLUME' if supplier['NATION'] == 'CHINA' else 0) / F.sum('VOLUME')
          ).alias('MKT_SHARE')
+    ).sort(
+        'O_YEAR'
     )
-    china_share_sorted = china_share.sort(
-        china_share['O_YEAR']
-    )
-    return china_share_sorted
+    return all_nations
 
 
 def q9(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_avro=False):
