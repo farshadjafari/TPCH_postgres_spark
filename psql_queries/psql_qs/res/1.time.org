@@ -1,4 +1,0 @@
-BEGIN
-Timing is on.
-Time: 569258.088 ms (09:29.258)
-Time: 0.329 ms

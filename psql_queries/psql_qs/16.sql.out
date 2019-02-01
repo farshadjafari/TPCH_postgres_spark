@@ -1,6 +1,0 @@
-  p_brand   |         p_type         | p_size | supplier_cnt 
-------------+------------------------+--------+--------------
- Brand#51   | MEDIUM ANODIZED NICKEL |     27 |          595
-(1 row)
-
-COMMIT

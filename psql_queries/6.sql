@@ -1,17 +1,17 @@
--- USING 1544205479 AS A SEED TO THE RNG
+-- using 1544205479 as a seed to the RNG
 
 
 BEGIN;
-\O 6.SQL.OUT
-\TIMING ON
-SELECT
-	SUM(L_EXTENDEDPRICE * L_DISCOUNT) AS REVENUE
-FROM
-	LINEITEM
-WHERE
-	L_SHIPDATE >= DATE '1993-01-01'
-	AND L_SHIPDATE < DATE '1993-01-01' + INTERVAL '1' YEAR
-	AND L_DISCOUNT BETWEEN 0.04 - 0.01 AND 0.04 + 0.01
-	AND L_QUANTITY < 25
+\o 6.sql.out
+\timing on
+select
+	sum(l_extendedprice * l_discount) as revenue
+from
+	lineitem
+where
+	l_shipdate >= date '1993-01-01'
+	and l_shipdate < date '1993-01-01' + interval '1' year
+	and l_discount between 0.04 - 0.01 and 0.04 + 0.01
+	and l_quantity < 25
 ;
 COMMIT;

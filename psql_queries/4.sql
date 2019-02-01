@@ -1,29 +1,29 @@
--- USING 1544205479 AS A SEED TO THE RNG
+-- using 1544205479 as a seed to the RNG
 
 
 BEGIN;
-\O 4.SQL.OUT
-\TIMING ON
-SELECT
-	O_ORDERPRIORITY,
-	COUNT(*) AS ORDER_COUNT
-FROM
-	ORDERS
-WHERE
-	O_ORDERDATE >= DATE '1993-04-01'
-	AND O_ORDERDATE < DATE '1993-04-01' + INTERVAL '3' MONTH
-	AND EXISTS (
-		SELECT
+\o 4.sql.out
+\timing on
+select
+	o_orderpriority,
+	count(*) as order_count
+from
+	orders
+where
+	o_orderdate >= date '1993-04-01'
+	and o_orderdate < date '1993-04-01' + interval '3' month
+	and exists (
+		select
 			*
-		FROM
-			LINEITEM
-		WHERE
-			L_ORDERKEY = O_ORDERKEY
-			AND L_COMMITDATE < L_RECEIPTDATE
+		from
+			lineitem
+		where
+			l_orderkey = o_orderkey
+			and l_commitdate < l_receiptdate
 	)
-GROUP BY
-	O_ORDERPRIORITY
-ORDER BY
-	O_ORDERPRIORITY
+group by
+	o_orderpriority
+order by
+	o_orderpriority
 ;
 COMMIT;

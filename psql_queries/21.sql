@@ -1,6 +1,6 @@
 -- using 1544205479 as a seed to the RNG
 
-
+SET log_statement = 'all';
 BEGIN;
 \o 21.sql.out
 \timing on

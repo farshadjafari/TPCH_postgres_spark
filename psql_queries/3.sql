@@ -1,30 +1,30 @@
--- USING 1544205479 AS A SEED TO THE RNG
+-- using 1544205479 as a seed to the RNG
 
 
 BEGIN;
-\O 3.SQL.OUT
-\TIMING ON
-SELECT
-	L_ORDERKEY,
-	SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) AS REVENUE,
-	O_ORDERDATE,
-	O_SHIPPRIORITY
-FROM
-	CUSTOMER,
-	ORDERS,
-	LINEITEM
-WHERE
-	C_MKTSEGMENT = 'HOUSEHOLD'
-	AND C_CUSTKEY = O_CUSTKEY
-	AND L_ORDERKEY = O_ORDERKEY
-	AND O_ORDERDATE < DATE '1995-03-02'
-	AND L_SHIPDATE > DATE '1995-03-02'
-GROUP BY
-	L_ORDERKEY,
-	O_ORDERDATE,
-	O_SHIPPRIORITY
-ORDER BY
-	REVENUE DESC,
-	O_ORDERDATE
-LIMIT 10;
+\o 3.sql.out
+\timing on
+select
+	l_orderkey,
+	sum(l_extendedprice * (1 - l_discount)) as revenue,
+	o_orderdate,
+	o_shippriority
+from
+	customer,
+	orders,
+	lineitem
+where
+	c_mktsegment = 'HOUSEHOLD'
+	and c_custkey = o_custkey
+	and l_orderkey = o_orderkey
+	and o_orderdate < date '1995-03-02'
+	and l_shipdate > date '1995-03-02'
+group by
+	l_orderkey,
+	o_orderdate,
+	o_shippriority
+order by
+	revenue desc,
+	o_orderdate
+limit 10;
 COMMIT;

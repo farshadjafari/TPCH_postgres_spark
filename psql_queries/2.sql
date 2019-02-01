@@ -1,51 +1,51 @@
--- USING 1544205479 AS A SEED TO THE RNG
+-- using 1544205479 as a seed to the RNG
 
 
 BEGIN;
-\O 2.SQL.OUT
-\TIMING ON
-SELECT
-	S_ACCTBAL,
-	S_NAME,
-	N_NAME,
-	P_PARTKEY,
-	P_MFGR,
-	S_ADDRESS,
-	S_PHONE,
-	S_COMMENT
-FROM
-	PART,
-	SUPPLIER,
-	PARTSUPP,
-	NATION,
-	REGION
-WHERE
-	P_PARTKEY = PS_PARTKEY
-	AND S_SUPPKEY = PS_SUPPKEY
-	AND P_SIZE = 25
-	AND P_TYPE LIKE '%COPPER'
-	AND S_NATIONKEY = N_NATIONKEY
-	AND N_REGIONKEY = R_REGIONKEY
-	AND R_NAME = 'AFRICA'
-	AND PS_SUPPLYCOST = (
-		SELECT
-			MIN(PS_SUPPLYCOST)
-		FROM
-			PARTSUPP,
-			SUPPLIER,
-			NATION,
-			REGION
-		WHERE
-			P_PARTKEY = PS_PARTKEY
-			AND S_SUPPKEY = PS_SUPPKEY
-			AND S_NATIONKEY = N_NATIONKEY
-			AND N_REGIONKEY = R_REGIONKEY
-			AND R_NAME = 'AFRICA'
+\o 2.sql.out
+\timing on
+select
+	s_acctbal,
+	s_name,
+	n_name,
+	p_partkey,
+	p_mfgr,
+	s_address,
+	s_phone,
+	s_comment
+from
+	part,
+	supplier,
+	partsupp,
+	nation,
+	region
+where
+	p_partkey = ps_partkey
+	and s_suppkey = ps_suppkey
+	and p_size = 25
+	and p_type like '%COPPER'
+	and s_nationkey = n_nationkey
+	and n_regionkey = r_regionkey
+	and r_name = 'AFRICA'
+	and ps_supplycost = (
+		select
+			min(ps_supplycost)
+		from
+			partsupp,
+			supplier,
+			nation,
+			region
+		where
+			p_partkey = ps_partkey
+			and s_suppkey = ps_suppkey
+			and s_nationkey = n_nationkey
+			and n_regionkey = r_regionkey
+			and r_name = 'AFRICA'
 	)
-ORDER BY
-	S_ACCTBAL DESC,
-	N_NAME,
-	S_NAME,
-	P_PARTKEY
-LIMIT 100;
+order by
+	s_acctbal desc,
+	n_name,
+	s_name,
+	p_partkey
+limit 100;
 COMMIT;
