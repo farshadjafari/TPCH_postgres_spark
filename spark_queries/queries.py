@@ -184,7 +184,11 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
         orders,
         customer['C_CUSTKEY'] == orders['O_CUSTKEY']
     ).join(
-        lineitem,
+        lineitem.filter(
+            lineitem['L_SHIPDATE'].between(
+                get_datetime(datetime.datetime(1995, 1, 1), is_avro),
+                get_datetime(datetime.datetime(1996, 12, 31), is_avro),
+            )),
         orders['O_ORDERKEY'] == lineitem['L_ORDERKEY']
     ).join(
         supplier,
@@ -204,13 +208,7 @@ def q7(customer, lineitem, part, supplier, partsupp, nation, orders, region, is_
                  (ger_chi_lines['CUST_NATION'] == 'CHINA')) |
                 ((ger_chi_lines['SUPP_NATION'] == 'CHINA') &
                  (ger_chi_lines['CUST_NATION'] == 'GERMANY'))
-        ) & (
-            ger_chi_lines['L_SHIPDATE'].between(
-                get_datetime(datetime.datetime(1995, 1, 1), is_avro),
-                get_datetime(datetime.datetime(1996, 12, 31), is_avro),
-            )
         )
-
     )
     ger_chi_lines_gourps = ger_chi_lines_filtered.groupBy('SUPP_NATION', 'CUST_NATION', 'L_YEAR')
     ger_chi_lines_gourps_rev = ger_chi_lines_gourps.agg(
